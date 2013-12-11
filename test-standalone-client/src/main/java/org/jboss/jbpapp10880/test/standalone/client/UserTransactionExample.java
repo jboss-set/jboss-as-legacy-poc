@@ -13,10 +13,12 @@ public class UserTransactionExample {
 
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
         UserTxClient client = new UserTxClient();
-        client.accessTxMandatoryEJB();
+        client.commitTxMandatoryEJB();
+        client.rollbackTxMandatoryEJB();
     }
 
 }

@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" 
-	xmlns="http://java.sun.com/xml/ns/javaee" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-   <description>XXX</description>
+    <description>XXX</description>
 
-   <!-- ### Servlets -->
-   <servlet>
-      <servlet-name>TestServlet</servlet-name>
-      <servlet-class>org.jboss.test.TestServlet</servlet-class>
-   </servlet>
-   <servlet>
-      <servlet-name>TestTransactionalServlet</servlet-name>
-      <servlet-class>org.jboss.test.transactional.TestTransactionalServlet</servlet-class>
-   </servlet>
+    <!-- ### Servlets -->
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>org.jboss.test.TestServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TestTransactionalServlet</servlet-name>
+        <servlet-class>org.jboss.test.transactional.TestTransactionalServlet</servlet-class>
+    </servlet>
 
-   <!-- The servlet and jsp page mappings -->
-   <servlet-mapping>
-      <servlet-name>TestServlet</servlet-name>
-      <url-pattern>/regular/test</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>TestServlet</servlet-name>
-      <url-pattern>/regular/secured/test</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>TestTransactionalServlet</servlet-name>
-      <url-pattern>/transactional/test</url-pattern>
-   </servlet-mapping>
-   <servlet-mapping>
-      <servlet-name>TestTransactionalServlet</servlet-name>
-      <url-pattern>/transactional/secured/test</url-pattern>
-   </servlet-mapping>
+    <!-- The servlet and jsp page mappings -->
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/regular/test</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/regular/secured/test</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestTransactionalServlet</servlet-name>
+        <url-pattern>/transactional/test</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TestTransactionalServlet</servlet-name>
+        <url-pattern>/transactional/secured/test</url-pattern>
+    </servlet-mapping>
 
-   <security-constraint>
-		<web-resource-collection>
-			<web-resource-name>All resources</web-resource-name>
-			<description>Protects all resources</description>
-			<url-pattern>/regular/secured/*</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<web-resource-collection>
-			<web-resource-name>All resources</web-resource-name>
-			<description>Protects all resources</description>
-			<url-pattern>/transactional/secured/*</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>TestRole</role-name>
-		</auth-constraint>
-	</security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>All resources</web-resource-name>
+            <description>Protects all resources</description>
+            <url-pattern>/regular/secured/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>All resources</web-resource-name>
+            <description>Protects all resources</description>
+            <url-pattern>/transactional/secured/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>TestRole</role-name>
+        </auth-constraint>
+    </security-constraint>
    
-	<security-role>
-		<role-name>TestRole</role-name>
-	</security-role>
+    <security-role>
+        <role-name>TestRole</role-name>
+    </security-role>
       
-	<login-config>
-		<auth-method>FORM</auth-method>
-			<form-login-config>
-				<form-login-page>/regular/secured/login.html</form-login-page>
-				<form-error-page>/regular/secured/errors.html</form-error-page>
-			</form-login-config>
-	</login-config>	
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/regular/secured/login.html</form-login-page>
+            <form-error-page>/regular/secured/errors.html</form-error-page>
+        </form-login-config>
+    </login-config>
 </web-app>
