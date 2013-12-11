@@ -15,6 +15,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
+
 package org.jboss.jbpapp10880.test.standalone.client;
 
 import java.io.IOException;
@@ -22,8 +24,11 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.jboss.test.transactional.TransactionMandatoryRemote;
+import org.jboss.tm.usertx.client.ClientUserTransaction;
 
 /**
  *
@@ -43,21 +48,98 @@ public class UserTxClient {
         return new javax.naming.InitialContext(jndiProperties);
     }
 
-    public void accessTxMandatoryEJB() throws Exception {
+    public void commitTxMandatoryEJB() throws Exception {
         InitialContext initialContext = getInitialContext();
         UserTransaction xact = (UserTransaction) initialContext.lookup(USER_TRANSACTION);
         try {
-            xact.begin();
+            System.out.println("*********************************************************************");
+            System.out.println("******************************COMMIT*********************************");
             TransactionMandatoryRemote ejb = (TransactionMandatoryRemote) initialContext.lookup(EJB_NAME);
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
+            xact.begin();
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
             ejb.mandatoryTxOp();
             xact.commit();
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
+            System.out.println("*********************************************************************");
         } catch (Exception e) {
             e.printStackTrace();
             log.severe(e.getMessage());
-            xact.rollback();
             throw e;
         } finally {
             initialContext.close();
+        }
+    }
+
+    public void rollbackTxMandatoryEJB() throws Exception {
+        InitialContext initialContext = getInitialContext();
+        UserTransaction xact = (UserTransaction) initialContext.lookup(USER_TRANSACTION);
+        try {
+            System.out.println("*********************************************************************");
+            System.out.println("**************************ROLLBACK***********************************");
+            TransactionMandatoryRemote ejb = (TransactionMandatoryRemote) initialContext.lookup(EJB_NAME);
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
+            xact.begin();
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
+            ejb.mandatoryTxOp();
+            xact.setRollbackOnly();
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);
+            xact.rollback();
+            checkClientTransactionStatus(xact);
+            checkServerTransactionStatus(ejb);            
+            System.out.println("*********************************************************************");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.severe(e.getMessage());
+            throw e;
+        } finally {
+            initialContext.close();
+        }
+    }
+
+    private void checkServerTransactionStatus(TransactionMandatoryRemote ejb) {
+        try {
+            System.out.println("We have a transaction on the server " + ejb.currentTransaction());
+        } catch (javax.ejb.EJBTransactionRequiredException ex) {
+            System.out.println("We have NO transaction on the server");
+        }
+    }
+    
+    private void checkClientTransactionStatus(UserTransaction xact) throws SystemException {
+          System.out.println("We have local transaction " +  ((ClientUserTransaction)xact).getTransactionPropagationContext() 
+                  + " " + getTransactionStatus(xact.getStatus()));
+
+    }
+
+    public String getTransactionStatus(int status) {
+        switch (status) {
+            case Status.STATUS_ACTIVE:
+                return "ACTIVE";
+            case Status.STATUS_COMMITTED:
+                return "COMMITTED";
+            case Status.STATUS_COMMITTING:
+                return "COMMITTING";
+            case Status.STATUS_MARKED_ROLLBACK:
+                return "MARKED_ROLLBACK";
+            case Status.STATUS_NO_TRANSACTION:
+                return "NO_TRANSACTION";
+            case Status.STATUS_PREPARED:
+                return "PREPARED";
+            case Status.STATUS_PREPARING:
+                return "PREPARING";
+            case Status.STATUS_ROLLEDBACK:
+                return "ROLLEDBACK";
+            case Status.STATUS_ROLLING_BACK:
+                return "ROLLING_BACK";
+            case Status.STATUS_UNKNOWN:
+            default:
+                return "UNKOWN";
         }
     }
 }
