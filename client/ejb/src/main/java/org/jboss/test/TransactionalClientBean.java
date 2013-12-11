@@ -28,9 +28,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.auth.callback.UsernamePasswordHandler;
@@ -102,7 +100,7 @@ public class TransactionalClientBean implements LocalTransactionalClient {
     }
 
     private UserTransaction createUserTransaction(InitialContext ic) throws Exception {
-        UserTransaction userTransaction = (UserTransaction) ic.lookup("java:comp/UserTransaction");
+        UserTransaction userTransaction = (UserTransaction) ic.lookup("java:jboss/UserTransaction");
 
         userTransaction.setTransactionTimeout(1000);
         userTransaction.begin();
