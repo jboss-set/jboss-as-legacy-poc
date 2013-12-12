@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="com.redhat.qa.eap5client.jbm">
+    <resources>
+        <resource-root path="jboss-messaging-client.jar" />
+        <resource-root path="jboss-aop-client.jar" />
+        <resource-root path="jboss-remoting.jar" />
+        <resource-root path="jboss-common-core.jar" />
+        <resource-root path="jboss-mdr.jar" />
+        <resource-root path="trove.jar" />
+        <resource-root path="javassist.jar" />
+        <resource-root path="concurrent.jar" />
+
+        <resource-root path="jboss-logging-spi.jar" />
+        <resource-root path="jboss-logging-log4j.jar" />
+        <resource-root path="log4j.jar" />
+        <resource-root path="jbosssx-client.jar" />
+        <resource-root path="jnp-client.jar" />
+    </resources>
+
+    <dependencies>
+        <module name="javax.api" />
+        <module name="javax.jms.api" />
+        <module name="javax.transaction.api" />
+    </dependencies>
+</module>

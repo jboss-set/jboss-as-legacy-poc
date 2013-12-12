@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="com.redhat.qa.eap5client.hq">
+    <resources>
+        <resource-root path="netty.jar" />
+        <resource-root path="hornetq-core-client.jar" />
+        <resource-root path="hornetq-jms-client.jar" />
+
+        <resource-root path="jboss-logging-spi.jar" />
+        <resource-root path="jbosssx-client.jar" />
+        <resource-root path="jnp-client.jar" />
+    </resources>
+
+    <dependencies>
+        <module name="javax.api" />
+        <module name="javax.jms.api" />
+        <module name="javax.transaction.api" />
+    </dependencies>
+</module>

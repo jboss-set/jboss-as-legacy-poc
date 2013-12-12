@@ -1,0 +1,1195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+    	<groupId>org.jboss.jbpapp-10880</groupId>
+    	<artifactId>test-client</artifactId>
+    	<version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>integration-tests</artifactId>
+
+    <name>EAP 5-6 Interoperability Testsuite</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- definitely need to redefine these through command line -->
+        <jbossas.ts.zip.eap5>==DEFINE ME - EAP5 zip path==</jbossas.ts.zip.eap5>
+        <jbossas.ts.zip.eap5-hq-installer>==DEFINE ME - EAP5 hornetq installer zip path==</jbossas.ts.zip.eap5-hq-installer>
+        <jbossas.ts.zip.eap6>==DEFINE ME - EAP6 zip path==</jbossas.ts.zip.eap6>
+
+        <!-- might have to redefine these -->
+        <eap5.client.version>5.1.2</eap5.client.version>
+        <eap6.client.version>6.0.1.ER3</eap6.client.version>
+        <execution>both</execution>
+        <!-- both|jbm|hornetq. Picks which surefire executions will be activated.
+         If you only want to run tests against either HornetQ'ed EAP or JBM'ed EAP..
+          By default, both are executed. -->
+
+        <!-- definitely no need to redefine these -->
+        <jbossas.ts.home.eap5>target/runtimes/eap5</jbossas.ts.home.eap5>
+        <jbossas.ts.home.eap5-copy>target/runtimes/eap5-copy</jbossas.ts.home.eap5-copy>
+        <jbossas.ts.home.eap5hq>target/runtimes/eap5hq</jbossas.ts.home.eap5hq>
+        <jbossas.ts.home.eap6>target/runtimes/eap6</jbossas.ts.home.eap6>
+        <jbossas.ts.home.eap6-copy>target/runtimes/eap6-copy</jbossas.ts.home.eap6-copy>
+        <picocontainer.version>1.2</picocontainer.version>
+        <!-- needed for jacorb dependency -->
+    </properties>
+
+    <repositories>
+
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Maven Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>java</id>
+            <name>Public Maven Repository</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+<!--
+        <repository>
+            <id>lib</id>
+            <name>lib</name>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+-->
+    </repositories>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.1.2.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+				<testResources>
+				  <testResource>
+				    <directory>${project.basedir}/src/test/java</directory>
+				    <excludes>
+				        <exclude>**/*.java</exclude>
+				    </excludes>
+				  </testResource>
+				  <testResource>
+				    <directory>${project.basedir}/src/test/generated-sources</directory>
+				    <excludes>
+				        <exclude>**/*.java</exclude>
+				    </excludes>
+				  </testResource>
+				  <testResource>
+				    <directory>${project.basedir}/src/test/resources</directory>
+				  </testResource>
+	    	</testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rmic-maven-plugin</artifactId>
+                <version>1.2.0</version>
+                <executions>
+                    <execution>
+                        <id>rmi compilation iiop</id>
+                        <goals>
+                            <goal>test-rmic</goal>
+                        </goals>
+				                <configuration>
+														<keep>true</keep>
+          									<testOutputDirectory>${project.basedir}/src/test/generated-sources</testOutputDirectory>
+          									<verbose>true</verbose>
+				                    <sources>
+				                        <source>
+				                            <includes>
+<!--
+				                                <include>
+				                                    com.redhat.eap.test.interop.iiop.simple.ejb2.interfaces.SimpleStatelessHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.iiop.simple.ejb2.interfaces.SimpleStatefulHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.iiop.param.ejb2.interfaces.ParameterHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.iiop.tx.ejb2.interfaces.TransactionalStatelessHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.iiop.tx.ejb2.interfaces.TransactionalStatefulHome
+				                                </include>
+-->
+				                            </includes>
+				                            <iiop>true</iiop>
+				                        </source>
+				                    </sources>
+				                </configuration>
+                    </execution>
+                    <execution>
+                        <id>rmi compilation</id>
+                        <goals>
+                            <goal>test-rmic</goal>
+                        </goals>
+				                <configuration>
+														<keep>true</keep>
+          									<testOutputDirectory>${project.basedir}/src/test/generated-sources</testOutputDirectory>
+          									<verbose>true</verbose>
+				                    <sources>
+				                        <source>
+				                            <includes>
+<!--
+				                                <include>
+				                                    com.redhat.eap.test.interop.rmi.simple.ejb2.interfaces.SimpleStatelessHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.rmi.simple.ejb2.interfaces.SimpleStatefulHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.rmi.param.ejb2.interfaces.ParameterHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.rmi.tx.ejb2.interfaces.TransactionalStatelessHome
+				                                </include>
+				                                <include>
+				                                    com.redhat.eap.test.interop.rmi.tx.ejb2.interfaces.TransactionalStatefulHome
+				                                </include>
+-->
+				                            </includes>
+				                        </source>
+				                    </sources>
+				                </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.spec</groupId>
+            <artifactId>jboss-javaee-6.0</artifactId>
+            <version>1.0.0.Final</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-multiple-containers</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-jbossas-managed-5.1</artifactId>
+            <version>1.0.0.Final-SNAPSHOT</version>
+        </dependency>
+
+<!--
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>arquillian-container-osgi</artifactId>
+            <version>1.0.2.Final</version>
+            <scope>test</scope>
+        </dependency>
+-->
+        <!-- org.jboss.osgi -->
+<!--
+        <dependency>
+            <groupId>org.jboss.osgi.spi</groupId>
+            <artifactId>jbosgi-spi</artifactId>
+            <version>1.0.21</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>r4v42-20090728</version>
+        </dependency>
+-->
+<!--
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>jboss-as-arquillian-common</artifactId>
+            <version>7.1.2.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>jboss-as-arquillian-container-managed</artifactId>
+            <version>7.1.2.Final</version>
+            <scope>test</scope>
+        </dependency>
+-->
+
+        <dependency>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-server-manager</artifactId>
+            <version>1.0.5-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+				<dependency>
+					<groupId>org.jboss</groupId>
+					<artifactId>jnp-client</artifactId>
+					<version>4.2.2.GA</version>
+          <scope>test</scope>
+				</dependency>
+
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+					<version>2.1.2.GA-compat</version>
+					<scope>test</scope>
+				</dependency>
+				<!--
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.1.2.GA</version>
+          <scope>test</scope>
+        </dependency>
+				 -->
+        <dependency>
+          <groupId>org.jboss.slf4j</groupId>
+          <artifactId>slf4j-jboss-logging</artifactId>
+          <version>1.0.2.GA</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging-jdk</artifactId>
+          <version>2.1.0.GA</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-log4j</artifactId>
+            <version>2.1.0.GA</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+            <version>2.1.0.GA</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.10.0.GA</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.aop</groupId>
+            <artifactId>jboss-aop</artifactId>
+            <version>2.1.1.GA</version>
+            <classifier>client</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>apache-xerces</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss</groupId>
+                    <artifactId>jboss-reflect</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>qdox</groupId>
+                    <artifactId>qdox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>trove</groupId>
+                    <artifactId>trove</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.integration</groupId>
+            <artifactId>jboss-integration</artifactId>
+            <version>5.1.0.GA</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>trove</artifactId>
+            <groupId>trove</groupId>
+            <type>jar</type>
+            <version>1.0.2</version>
+          <scope>test</scope>
+        </dependency>
+				<dependency>
+					<groupId>jboss</groupId>
+					<artifactId>jbossall-client</artifactId>
+					<version>4.2.2.GA</version>
+					<scope>test</scope>
+				</dependency>
+
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-arquillian-common</artifactId>
+            <version>7.2.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-arquillian-container-managed</artifactId>
+            <version>7.2.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>eap5-client</artifactId>
+            <version>${eap5.client.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>eap6-client</artifactId>
+            <version>${eap6.client.version}</version>
+            <scope>test</scope>
+        </dependency>
+-->
+<!--
+        <dependency>
+            <groupId>eap</groupId>
+            <artifactId>eap-client</artifactId>
+            <version>5.1.2.GA-HornetQ-all</version>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>eap</groupId>
+            <artifactId>eap-client</artifactId>
+            <version>6.0.1.ER3</version>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jboss.test.interop</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>2.1.2.GA-compat</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>2.1.2.GA-compat</version>
+            <scope>test</scope>
+        </dependency>
+-->
+
+        <dependency>
+            <groupId>org.jboss.ejb3</groupId>
+            <artifactId>jboss-ejb3-ext-api</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+            <artifactId>shrinkwrap-descriptors-api-javaee</artifactId>
+            <version>2.0.0-alpha-5</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
+<!--
+        <dependency>
+-->
+            <!-- this is only needed for compilation.
+         com.redhat.eap.test.interop.iiop.secured.ejb3.client.EAP5SecuredClientBean
+         makes use of this. -->
+<!--
+            <groupId>org.jacorb</groupId>
+            <artifactId>jacorb</artifactId>
+            <version>2.3.2.jbossorg-4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>picocontainer-gems</artifactId>
+                    <groupId>picocontainer</groupId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
+        </dependency>
+-->
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>prepare</id>
+            <activation>
+                <property>
+                    <name>!noprepare</name>
+                </property>
+            </activation>
+				    <build>
+				        <plugins>
+
+				            <plugin>
+				                <groupId>org.apache.maven.plugins</groupId>
+				                <artifactId>maven-antrun-plugin</artifactId>
+				                <version>1.6</version>
+				                <executions>
+				                    <execution>
+				                        <id>prepare</id>
+				                        <phase>validate</phase>
+				                        <configuration>
+				                            <tasks>
+				                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+				                                         classpathref="maven.plugin.classpath"/>
+				                                <if>
+				                                    <available file="target/runtimes"/>
+				                                    <then>
+				                                        <echo message="Runtimes already configured. Invoke mvn clean to have them reconfigured."/>
+				                                    </then>
+				                                    <else>
+				                                        <echo message="Unpacking target runtimes."/>
+
+				                                        <!-- EAP5 for installation of HQ -->
+				                                        <unzip src="${jbossas.ts.zip.eap5}" dest="target/runtimes"/>
+
+				                                        <!-- HQ installer -->
+				                                        <unzip src="${jbossas.ts.zip.eap5-hq-installer}"
+				                                               dest="target/runtimes"/>
+
+				                                        <!-- move EAP5-HQ to final directory name -->
+				                                        <move tofile="${jbossas.ts.home.eap5hq}"
+				                                              file="target/runtimes/jboss-eap-5.0" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5hq}"
+				                                              file="target/runtimes/jboss-eap-5.1" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5hq}"
+				                                              file="target/runtimes/jboss-eap-5.2" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5hq}"
+				                                              file="target/runtimes/jboss-eap-5.3" failonerror="false"/>
+
+				                                        <!-- EAP5 for JBM -->
+				                                        <unzip src="${jbossas.ts.zip.eap5}" dest="target/runtimes"/>
+				                                        <move tofile="${jbossas.ts.home.eap5}"
+				                                              file="target/runtimes/jboss-eap-5.0" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5}"
+				                                              file="target/runtimes/jboss-eap-5.1" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5}"
+				                                              file="target/runtimes/jboss-eap-5.2" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap5}"
+				                                              file="target/runtimes/jboss-eap-5.3" failonerror="false"/>
+
+				                                        <!-- EAP6 -->
+				                                        <unzip src="${jbossas.ts.zip.eap6}" dest="target/runtimes"/>
+				                                        <move tofile="${jbossas.ts.home.eap6}"
+				                                              file="target/runtimes/jboss-eap-6.0" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap6}"
+				                                              file="target/runtimes/jboss-eap-6.1" failonerror="false"/>
+				                                        <move tofile="${jbossas.ts.home.eap6}"
+				                                              file="target/runtimes/jboss-eap-6.2" failonerror="false"/>
+
+				                                        <echo message="Setting up EAP5 security."/>
+				                                        <copy file="src/config/test-users.properties"
+				                                              todir="${jbossas.ts.home.eap5}/jboss-as/server/all/conf/props"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/test-roles.properties"
+				                                              todir="${jbossas.ts.home.eap5}/jboss-as/server/all/conf/props"
+				                                              overwrite="true"/>
+
+				                                        <echo message="Setting up EAP6 security."/>
+				                                        <copy file="src/config/mgmt-users.properties"
+				                                              todir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/application-users.properties"
+				                                              todir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/application-roles.properties"
+				                                              todir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/test-users.properties"
+				                                              todir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/test-roles.properties"
+				                                              todir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              overwrite="true"/>
+
+				                                        <echo message="Enabling JTS for EAP5."/>
+				                                        <ant dir="${jbossas.ts.home.eap5}/jboss-as/docs/examples/transactions"
+				                                             antfile="build.xml">
+				                                            <target name="jts"/>
+				                                        </ant>
+				                                        <echo message="Enabling JTS for EAP5 with HornetQ."/>
+				                                        <ant dir="${jbossas.ts.home.eap5hq}/jboss-as/docs/examples/transactions"
+				                                             antfile="build.xml">
+				                                            <target name="jts"/>
+				                                        </ant>
+				                                        <echo message="Switching to HornetQ."/>
+				                                        <ant dir="${jbossas.ts.home.eap5hq}/jboss-as/extras/hornetq"
+				                                             antfile="build.xml">
+				                                            <target name="install"/>
+				                                        </ant>
+
+				                                        <echo message="Configuring HornetQ."/>
+				                                        <copy file="src/config/hornetq-jms.xml"
+				                                              todir="${jbossas.ts.home.eap5hq}/jboss-as/server/all/deploy/hornetq"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/hornetq-users.properties"
+				                                              todir="${jbossas.ts.home.eap5hq}/jboss-as/server/all/conf/props"
+				                                              overwrite="true"/>
+				                                        <copy file="src/config/hornetq-roles.properties"
+				                                              todir="${jbossas.ts.home.eap5hq}/jboss-as/server/all/conf/props"
+				                                              overwrite="true"/>
+
+				                                        <echo message="Enabling JTS for EAP6."/>
+				                                        <xslt destdir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              style="src/config/enableJTS.xsl"
+				                                              extension=".xml.mod"
+				                                              useImplicitFileset="false">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml"/>
+				                                            </fileset>
+				                                        </xslt>
+				                                        <move todir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml.mod"/>
+				                                            </fileset>
+				                                            <mapper type="glob" from="*.mod" to="*"/>
+				                                        </move>
+<!--
+				                                        <echo message="Configuring JACORB subsystem for EAP6 (enabling SASClientInitializer)"/>
+				                                        <xslt destdir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              style="src/config/configureORB.xsl"
+				                                              extension=".xml.mod"
+				                                              useImplicitFileset="false">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml"/>
+				                                            </fileset>
+				                                        </xslt>
+				                                        <move todir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml.mod"/>
+				                                            </fileset>
+				                                            <mapper type="glob" from="*.mod" to="*"/>
+				                                        </move>
+
+				                                        <echo message="Configuring JACORB subsystem for EAP5 (switching from SASInitializer to SASClientInitializer)"/>
+				                                        <replace file="${jbossas.ts.home.eap5}/jboss-as/server/all/deploy/iiop-service.xml"
+				                                                 token="SASInitializer"
+				                                                 value="SASClientInitializer"/>
+ -->
+
+				                                        <echo message="Adding XA support for remote connection factory."/>
+				                                        <xslt destdir="${jbossas.ts.home.eap6}/standalone/configuration"
+				                                              style="src/config/enableXAConn.xsl"
+				                                              extension=".xml.mod"
+				                                              useImplicitFileset="false">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml"/>
+				                                            </fileset>
+				                                        </xslt>
+				                                        <move todir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                            <fileset
+				                                                    dir="${jbossas.ts.home.eap6}/standalone/configuration">
+				                                                <include name="**/standalone-full.xml.mod"/>
+				                                            </fileset>
+				                                            <mapper type="glob" from="*.mod" to="*"/>
+				                                        </move>
+
+				                                        <echo message="Copying EAP5 client libraries to EAP6 (as module com.redhat.qa.eap5client.hq)"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/hornetq-core-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/hornetq-jms-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/jboss-logging-spi.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/jbosssx-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/jnp-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5hq}/jboss-as/client/netty.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main"/>
+				                                        <copy file="src/config/eap6-hq-bridge-module.xml"
+				                                              tofile="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/hq/main/module.xml" />
+
+				                                        <echo message="Copying EAP5 client libraries to EAP6 (as module com.redhat.qa.eap5client.jbm)"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-messaging-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-aop-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-remoting.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-common-core.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-mdr.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/trove.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/javassist.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/concurrent.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-logging-log4j.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jboss-logging-spi.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jbosssx-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/jnp-client.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="${jbossas.ts.home.eap5}/jboss-as/client/log4j.jar"
+				                                              todir="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main"/>
+				                                        <copy file="src/config/eap6-jbm-bridge-module.xml"
+				                                              tofile="${jbossas.ts.home.eap6}/modules/system/layers/base/com/redhat/qa/eap5client/jbm/main/module.xml" />
+
+				                                        <echo message="Create copy of EAP5 "/>
+				                                        <copydir src="${jbossas.ts.home.eap5}"
+				                                              dest="${jbossas.ts.home.eap5-copy}"/>
+				                                        <echo message="Create copy of EAP6 "/>
+				                                        <copydir src="${jbossas.ts.home.eap6}"
+				                                              dest="${jbossas.ts.home.eap6-copy}"/>
+
+
+				                                    </else>
+				                                </if>
+				                            </tasks>
+				                        </configuration>
+				                        <goals>
+				                            <goal>run</goal>
+				                        </goals>
+				                    </execution>
+				                </executions>
+				                <dependencies>
+				                    <dependency>
+				                        <groupId>ant-contrib</groupId>
+				                        <artifactId>ant-contrib</artifactId>
+				                        <version>20020829</version>
+				                    </dependency>
+				                </dependencies>
+				            </plugin>
+				        </plugins>
+				    </build>
+        </profile>
+
+        <profile>
+            <id>both</id>
+            <activation>
+                <property>
+                    <name>!execution</name> <!-- cannot compare to the value 'both', because that would
+                    evaluate to true only after the user specifies that property from the command line.
+                    Maven's peculiar behavior. -->
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+
+                        <executions>
+
+                            <!-- Disable default-test execution. -->
+                            <execution>
+                                <id>default-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>none</phase>
+                            </execution>
+
+                            <!-- eap 5 group manual mode run -->
+                            <execution>
+                                <id>eap5-manual-mode.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+
+                                    <includes>
+                                        <include>**/eap5/*ManualModeTest.java</include>
+                                    </includes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP5_HOME</name>
+                                            <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_COPY_HOME</name>
+                                            <value>${jbossas.ts.home.eap5-copy}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_VMARGS</name>
+                                            <!--value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value-->
+                                            <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true</value>
+                                        </property>
+                                        <property>
+                                        		<name>arquillian.launch</name>
+                                        		<value>eap5-group</value>
+                                        </property>
+                                        <property>
+                                        		<name>arq.group.eap5-group.container.eap5-1.mode</name>
+                                        		<value>manual</value>
+                                        </property>
+                                        <property>
+                                        		<name>arq.group.eap5-group.container.eap5-2.mode</name>
+                                        		<value>manual</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                </configuration>
+                            </execution>
+
+                            <!-- eap 6 group manual mode run -->
+                            <execution>
+                                <id>eap6-manual-mode.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+
+                                    <includes>
+                                        <include>**/eap6/*ManualModeTest.java</include>
+                                    </includes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP6_HOME</name>
+                                            <value>${jbossas.ts.home.eap6}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_COPY_HOME</name>
+                                            <value>${jbossas.ts.home.eap6-copy}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=128m</value>
+                                        </property>
+                                        <property>
+                                        		<name>arquillian.launch</name>
+                                        		<value>eap6-group</value>
+                                        </property>
+                                        <property>
+                                        		<name>arq.group.eap6-group.container.eap6-1.mode</name>
+                                        		<value>manual</value>
+                                        </property>
+                                        <property>
+                                        		<name>arq.group.eap6-group.container.eap6-2.mode</name>
+                                        		<value>manual</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                </configuration>
+                            </execution>
+
+                            <!-- EAP5 JBossMessaging (not Hornetq) run -->
+                            <execution>
+                                <id>eap5-jbm.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+
+                                    <includes>
+                                        <include>com/redhat/eap/test/interop/**/*Test.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>com/redhat/eap/test/interop/jms_hqspecific/*Test.java
+                                        </exclude>
+                                    </excludes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP5_HOME</name>
+                                            <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_VMARGS</name>
+                                            <!--value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value-->
+                                            <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_HOME</name>
+                                            <value>${jbossas.ts.home.eap6}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                </configuration>
+                            </execution>
+
+
+                            <!-- EAP5 Hornetq run -->
+                            <execution>
+                                <id>eap5-hq.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>com/redhat/eap/test/interop/jms_hqspecific/*Test.java</include>
+                                    </includes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP5_HOME</name>
+                                            <value>${jbossas.ts.home.eap5hq}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_VMARGS</name>
+                                            <!--value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value-->
+                                            <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_HOME</name>
+                                            <value>${jbossas.ts.home.eap6}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>EAP5_HOME</name>
+                                    <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                </property>
+                                <property>
+                                    <name>EAP5_VMARGS</name>
+                                    <!--value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value-->
+                                    <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value>
+                                </property>
+                                <property>
+                                    <name>EAP6_HOME</name>
+                                    <value>${jbossas.ts.home.eap6}</value>
+                                </property>
+                                <property>
+                                    <name>EAP6_VMARGS</name>
+                                    <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                </property>
+                            </systemProperties>
+                            <forkMode>once</forkMode>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${basedir}/target/rmi-test-classes
+                                </additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>hornetq-only</id>
+            <activation>
+                <property>
+                    <name>execution</name>
+                    <value>hornetq</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+
+                        <executions>
+
+                            <!-- Disable default-test execution. -->
+                            <execution>
+                                <id>default-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>none</phase>
+                            </execution>
+
+                            <!-- EAP5 Hornetq run -->
+                            <execution>
+                                <id>eap5-hq.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>com/redhat/eap/test/interop/jms_hqspecific/*Test.java</include>
+                                    </includes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP5_HOME</name>
+                                            <value>${jbossas.ts.home.eap5hq}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_VMARGS</name>
+                                            <!--value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer</value-->
+                                            <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_HOME</name>
+                                            <value>${jbossas.ts.home.eap6}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                        <configuration>
+                            <forkMode>once</forkMode>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${basedir}/target/rmi-test-classes
+                                </additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jbm-only</id>
+            <activation>
+                <property>
+                    <name>execution</name>
+                    <value>jbm</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+
+                        <executions>
+
+                            <!-- Disable default-test execution. -->
+                            <execution>
+                                <id>default-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>none</phase>
+                            </execution>
+
+                            <!-- EAP5 JBossMessaging (not Hornetq) run -->
+                            <execution>
+                                <id>eap5-jbm.surefire</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>com/redhat/eap/test/interop/**/*Test.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>com/redhat/eap/test/interop/jms_hqspecific/*Test.java
+                                        </exclude>
+                                    </excludes>
+
+                                    <systemProperties>
+                                        <property>
+                                            <name>EAP5_HOME</name>
+                                            <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP5_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true</value>
+                                    <!--            -Djacorb.security.ssl.client.supported_options=0
+                                                -Djacorb.security.ssl.client.required_options=0-->
+                                                <!-- -Dorg.omg.PortableInterceptor.ORBInitializerClass.org.jboss.iiop.csiv2.SASClientInitializer
+                                               -Djacorb.interop.sun=on -Djacorb.interop.strict_check_on_tc_creation=off
+                                               -Dorg.omg.CORBA.ORBClass=org.jacorb.orb.ORB
+                                               -Dorg.omg.CORBA.ORBSingletonClass=org.jacorb.orb.ORBSingleton-->
+                                        </property>
+                                        <property>
+                                            <name>EAP6_HOME</name>
+                                            <value>${jbossas.ts.home.eap6}</value>
+                                        </property>
+                                        <property>
+                                            <name>EAP6_VMARGS</name>
+                                            <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                        </property>
+                                    </systemProperties>
+                                    <forkMode>once</forkMode>
+                                    <testFailureIgnore>true</testFailureIgnore>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                        <configuration>
+                            <forkMode>once</forkMode>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${basedir}/target/rmi-test-classes
+                                </additionalClasspathElement>
+                            </additionalClasspathElements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>debug-eap5</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>EAP5_HOME</name>
+                                    <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                </property>
+                                <property>
+                                    <name>EAP5_VMARGS</name>
+                                    <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</value>
+                                </property>
+                                <property>
+                                    <name>EAP6_HOME</name>
+                                    <value>${jbossas.ts.home.eap6}</value>
+                                </property>
+                                <property>
+                                    <name>EAP6_VMARGS</name>
+                                    <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000</value>
+                                </property>
+                            </systemProperties>
+                            <forkMode>once</forkMode>
+                            <testFailureIgnore>true</testFailureIgnore>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>debug-eap6</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>EAP5_HOME</name>
+                                    <value>${jbossas.ts.home.eap5}/jboss-as</value>
+                                </property>
+                                <property>
+                                    <name>EAP5_VMARGS</name>
+                                    <value>-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true
+                                    </value>
+                                </property>
+                                <property>
+                                    <name>EAP6_HOME</name>
+                                    <value>${jbossas.ts.home.eap6}</value>
+                                </property>
+                                <property>
+                                    <name>EAP6_VMARGS</name>
+                                    <value>-Xmx512m -XX:MaxPermSize=128m -Djboss.socket.binding.port-offset=1000 -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</value>
+                                </property>
+                            </systemProperties>
+                            <forkMode>once</forkMode>
+                            <testFailureIgnore>true</testFailureIgnore>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
