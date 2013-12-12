@@ -103,12 +103,12 @@ public class StatefulTransactionalBean implements RemoteTransactional{
     @Override
     public void timeout() {
         try {
-            Thread.currentThread().sleep(10000000000000L);
+            Thread.sleep(10000000000000L);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
 
 }
