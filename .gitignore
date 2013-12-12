@@ -31,3 +31,7 @@ atlassian-ide-plugin.xml
 *~
 # maven versions plugin
 pom.xml.versionsBackup
+
+maven-repo-local
+maven-repo-extra
+

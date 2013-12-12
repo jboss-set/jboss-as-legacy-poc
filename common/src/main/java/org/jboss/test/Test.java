@@ -22,10 +22,6 @@
 
 package org.jboss.test;
 
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 /**
  * @author baranowb

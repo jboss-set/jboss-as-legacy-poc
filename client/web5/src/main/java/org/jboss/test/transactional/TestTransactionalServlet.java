@@ -36,10 +36,11 @@ import org.jboss.test.LocalTransactionalClient;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public class TestTransactionalServlet extends HttpServlet {
 
+  private static final long serialVersionUID = -6323943812873504146L;
     private final static String PARAMETER_URL = "url";
     private final static String PARAMETER_STATEFUL = "stateful";
     private final static String PARAMETER_SECURED = "secured";
