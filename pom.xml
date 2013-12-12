@@ -30,6 +30,7 @@
         -->
         <version.ear.plugin>2.8</version.ear.plugin>
         <version.war.plugin>2.1.1</version.war.plugin>
+        <version.org.jboss.security.jbosssx>2.0.5.SP3-1</version.org.jboss.security.jbosssx>
     </properties>
 
     <!-- This quickstart consists of a server side component and a client that accesses
@@ -86,7 +87,7 @@
           <dependency>
         		<groupId>org.jboss.security</groupId>
         		<artifactId>jbosssx</artifactId>
-        		<version>2.0.5.SP3-1</version>
+        		<version>${version.org.jboss.security.jbosssx}</version>
         		<scope>compile</scope>
       	  </dependency>
 		</dependencies>
