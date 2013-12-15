@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ServerStartStopManualModeTest {
+public class ServerStartStopEAP5GroupManualTest {
 
   @ArquillianResource
   protected ContainerController controller;

@@ -19,37 +19,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.tests.eap6;
+package org.jboss.tests;
 
-import org.jboss.arquillian.container.test.api.ContainerController;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.Rule;
+import org.junit.rules.Timeout;
 
-@RunWith(Arquillian.class)
-@RunAsClient
-public class ServerStartStopManualModeTest {
+public abstract class TimeoutTestCase {
 
-  @ArquillianResource
-  protected ContainerController controller;
+  private static final String KEY_TEST_TIMEOUT = "test.timeoutMillis";
+  private static final int DEFAULT_TEST_TIMEOUT = 1*60000; // 1 minute
+  @Rule
+  public Timeout timeout = new Timeout(readIntValueFromSystemProperties(KEY_TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT));
 
-  @Test
-  public void testSingleServer() throws Exception {
-    String serverName = "eap6-1";
-    controller.start(serverName);
-    controller.stop(serverName);
+  static int readIntValueFromSystemProperties(String name, int defaultValue) {
+    String value = System.getProperty(name);
+    if (!(value == null || value.isEmpty())) {
+      try {
+        return Integer.parseInt(value);
+      } catch (Exception e) {
+        System.err.println("Can not parse int value from system property " + name + " with value " + value + " " + e.getMessage());
+        e.printStackTrace(System.err);
+      }
+    }
+    return defaultValue;
   }
 
-  @Test
-  public void testTwoServers() throws Exception {
-    String serverName = "eap6-1";
-    controller.start(serverName);
-    String serverName2 = "eap6-2";
-    controller.start(serverName);
-    controller.start(serverName2);
-    controller.stop(serverName2);
-    controller.stop(serverName);
-  }
 }
