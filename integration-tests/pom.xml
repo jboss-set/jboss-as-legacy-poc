@@ -5,8 +5,9 @@
 
     <parent>
     	<groupId>org.jboss.jbpapp-10880</groupId>
-    	<artifactId>test-client</artifactId>
+    	<artifactId>test-parent</artifactId>
     	<version>1.0.0-SNAPSHOT</version>
+    	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>integration-tests</artifactId>
