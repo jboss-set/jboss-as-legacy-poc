@@ -24,36 +24,35 @@ package org.jboss.tests.ejb3.beans;
 import java.util.Properties;
 
 import javax.ejb.Stateless;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.jboss.tests.ejb3.interfaces.RemoteBusinessInterfaceClient;
+import org.jboss.tests.ejb3.interfaces.ClientRemoteBusinessInterface;
 import org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface;
 
-@Stateless(name="RemoteBusinessInterfaceClientBean")
-public class RemoteBusinessInterfaceClientBean implements RemoteBusinessInterfaceClient {
+@Stateless
+public class ClientRemoteBusinessInterfaceBean implements ClientRemoteBusinessInterface {
 
 
     @Override
-    public String invokeStateless(String jndiName, String string) throws Exception {
-        StatelessRemoteBusinessInterface stateless = lookupEJBObject(jndiName, StatelessRemoteBusinessInterface.class);
+    public String invokeStateless(String jndiName, Properties initialContextProperties, String string) throws Exception {
+//      int i = 30;
+//      System.err.println("Sleeping " + i + " seconds");
+//        Thread.sleep(i*1000);
+//        System.err.println("continue after sleep");
+        StatelessRemoteBusinessInterface stateless = lookupEJBObject(jndiName, initialContextProperties, StatelessRemoteBusinessInterface.class);
         return stateless.echo(string);
     }
 
 
-    private <T> T lookupEJBObject(String jndiName, Class <T> interfaceClass) throws NamingException {
-      Properties props = new Properties();
+    private <T> T lookupEJBObject(String jndiName, Properties initialContextProperties , Class <T> interfaceClass) throws NamingException {
+      System.err.println("InitialContext provider url " + initialContextProperties.getProperty(InitialContext.PROVIDER_URL));
 
-      props.put("java.naming.factory.initial", "org.jboss.naming.NamingContextFactory");
-//      props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-      props.put(Context.PROVIDER_URL, "jnp://127.0.0.1:1099");
-      props.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
-      InitialContext ctx = new InitialContext(props);
+      InitialContext ctx = new InitialContext(initialContextProperties);
       System.err.println("Looking up object: " + jndiName);
-      @SuppressWarnings("unchecked")
       Object ejbBusIntf = ctx.lookup(jndiName);
       System.err.println("Object returned: " + String.valueOf(ejbBusIntf));
+      @SuppressWarnings("unchecked")
       T ejb = (T) javax.rmi.PortableRemoteObject.narrow(ejbBusIntf, interfaceClass);
       System.err.println("Narrowed object returned: " + String.valueOf(ejb));
       return ejb;

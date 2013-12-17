@@ -22,86 +22,41 @@
 package org.jboss.tests.ejb3;
 
 import static org.jboss.tests.ServerNames.*;
-import static org.junit.Assert.*;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.OverProtocol;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.tests.ejb3.beans.RemoteBusinessInterfaceClientBean;
-import org.jboss.tests.ejb3.beans.StatelessBusinessInterfaceImpl;
-import org.jboss.tests.ejb3.beans.StatelessRemoteBusinessInterfaceBean;
-import org.jboss.tests.ejb3.interfaces.RemoteBusinessInterfaceClient;
-import org.jboss.tests.ejb3.interfaces.StatelessBusinessInterface;
-import org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-
+/*
+VM Arguments
+-Darquillian.launch=eap5-group
+-Darq.group.eap5-group.container.eap5-1.mode=class
+-Darq.group.eap5-group.container.eap5-2.mode=class
+-DEAP5_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
+-DEAP5_HOME=target/runtimes/jboss-eap-5.1/jboss-as
+-DEAP5_COPY_HOME=target/runtimes/jboss-eap-5.1-copy/jboss-as
+ */
 @RunWith(Arquillian.class)
-public class EJB3RemoteBusinessInterface_EAP5toEAP5_EAP5GroupManagedTest {
-
-  private static final String NAME = "rmi-sever";
-
-  private static final String MODULE_NAME = "rmi-ejb";
-
-  private static final String CLIENT_NAME = NAME + "-client";
-
-  private static final String CLIENT_MODULE_NAME = "rmi-ejb-client";
+public class EJB3RemoteBusinessInterface_EAP5toEAP5_EAP5GroupManagedTest extends EJB3RemoteBusinessInterfaceTestCase {
 
   @Deployment(name = NAME, testable = false)
   @TargetsContainer(EAP5_1)
   @OverProtocol("Servlet 2.5")
-  public static EnterpriseArchive createDep1() {
-    JavaArchive jar = ShrinkWrap.create(JavaArchive.class, MODULE_NAME + ".jar")
-
-    .addClass(StatelessBusinessInterface.class)
-    .addClass(StatelessRemoteBusinessInterface.class)
-
-    .addClass(StatelessBusinessInterfaceImpl.class)
-    .addClass(StatelessRemoteBusinessInterfaceBean.class)
-
-    ;
-
-    EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, NAME + ".ear");
-    ear.addAsModule(jar);
-    return ear;
+  public static EnterpriseArchive createServerEar() {
+    return EJB3RemoteBusinessInterfaceTestCase.createServerDeployment();
   }
 
   @Deployment(name = CLIENT_NAME)
   @TargetsContainer(EAP5_2)
   @OverProtocol("Servlet 2.5")
-  public static EnterpriseArchive createDep2() {
-    JavaArchive jar = ShrinkWrap.create(JavaArchive.class, CLIENT_MODULE_NAME + ".jar")
-        .addClass(RemoteBusinessInterfaceClientBean.class)
-        .addClass(RemoteBusinessInterfaceClient.class)
-
-        .addClass(StatelessBusinessInterface.class)
-        .addClass(StatelessRemoteBusinessInterface.class)
-
-        .addClass(EJB3RemoteBusinessInterface_EAP5toEAP5_EAP5GroupManagedTest.class)
-
-    ;
-    EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, CLIENT_NAME + ".ear");
-    ear.addAsModule(jar);
-    return ear;
+  public static EnterpriseArchive createClientEar() {
+    return EJB3RemoteBusinessInterfaceTestCase.createClientDeployment(EJB3RemoteBusinessInterface_EAP5toEAP5_EAP5GroupManagedTest.class);
   }
 
-  @Test
-  @OperateOnDeployment(CLIENT_NAME)
-  public void testStatelessSessionBeanRemoteBusinessInterfaceInvocation() throws Exception {
-    String string = "" + System.currentTimeMillis();
-    assertEquals(string, getClient().invokeStateless(NAME + "/" + StatelessRemoteBusinessInterface.class.getSimpleName() + "Bean/remote", string));
+  public EJB3RemoteBusinessInterface_EAP5toEAP5_EAP5GroupManagedTest() {
+    super("jnp://127.0.0.1:1099");
   }
 
-  private RemoteBusinessInterfaceClient getClient() throws NamingException {
-    final InitialContext context = new InitialContext();
-    return (RemoteBusinessInterfaceClient) context.lookup(CLIENT_NAME + "/" + RemoteBusinessInterfaceClient.class.getSimpleName() + "Bean/remote");
-  }
 }

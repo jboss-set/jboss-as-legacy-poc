@@ -34,7 +34,7 @@
                 -->
                 <property name="javaVmArguments">${EAP6_VMARGS} -Djboss.socket.binding.port-offset=1000</property>
                 <property name="managementPort">10999</property>
-                <property name="serverConfig">standalone-full.xml</property>
+                <property name="serverConfig">standalone.xml</property>
                 <property name="username">admin</property>
                 <property name="password">adminpasswd</property>
             </configuration>
@@ -70,7 +70,7 @@
                 -->
                 <property name="javaVmArguments">${EAP6_VMARGS}</property>
                 <property name="managementPort">9999</property>
-                <property name="serverConfig">standalone-full.xml</property>
+                <property name="serverConfig">standalone.xml</property>
                 <property name="username">admin</property>
                 <property name="password">adminpasswd</property>
             </configuration>
@@ -91,7 +91,7 @@
                  -->
                 <property name="javaVmArguments">${EAP6_VMARGS}</property>
                 <property name="managementPort">9999</property>
-                <property name="serverConfig">standalone-full.xml</property>
+                <property name="serverConfig">standalone.xml</property>
                 <property name="username">admin</property>
                 <property name="password">adminpasswd</property>
             </configuration>
@@ -106,7 +106,7 @@
                 -->
                 <property name="javaVmArguments">${EAP6_VMARGS} -Djboss.socket.binding.port-offset=1000</property>
                 <property name="managementPort">10999</property>
-                <property name="serverConfig">standalone-full.xml</property>
+                <property name="serverConfig">standalone.xml</property>
                 <property name="username">admin</property>
                 <property name="password">adminpasswd</property>
             </configuration>

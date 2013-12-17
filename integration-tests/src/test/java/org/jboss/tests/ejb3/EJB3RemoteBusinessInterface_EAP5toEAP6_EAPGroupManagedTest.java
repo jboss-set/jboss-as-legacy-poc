@@ -22,133 +22,52 @@
 package org.jboss.tests.ejb3;
 
 import static org.jboss.tests.ServerNames.*;
-import static org.junit.Assert.*;
-
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.OverProtocol;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.tests.TimeoutTestCase;
-import org.jboss.tests.ejb3.beans.RemoteBusinessInterfaceClientBean;
-import org.jboss.tests.ejb3.beans.StatelessBusinessInterfaceImpl;
-import org.jboss.tests.ejb3.beans.StatelessRemoteBusinessInterfaceBean;
-import org.jboss.tests.ejb3.interfaces.RemoteBusinessInterfaceClient;
-import org.jboss.tests.ejb3.interfaces.StatelessBusinessInterface;
-import org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.junit.runner.RunWith;
+/*
 
+VM arguments
+-Darquillian.launch=eap-group
+-Darq.group.eap-group.container.eap5.mode=class
+-Darq.group.eap-group.container.eap6.mode=class
+-Darq.group.eap-group.container.eap6.serverConfig=standalone.xml
+-DEAP5_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
+-DEAP5_HOME=target/runtimes/jboss-eap-5.1/jboss-as
+-DEAP6_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
+-DEAP6_HOME=target/runtimes/jboss-eap-6.2
+
+to debug add to vmargs  -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y
+
+ */
 @RunWith(Arquillian.class)
-public class EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest extends TimeoutTestCase {
-
-  private static final String NAME = "rmi-sever";
-
-  private static final String MODULE_NAME = "rmi-ejb";
-
-  private static final String CLIENT_NAME = NAME + "-client";
-
-  private static final String CLIENT_MODULE_NAME = "rmi-ejb-client";
+public class EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest extends EJB3RemoteBusinessInterfaceTestCase {
 
   @Deployment(name = NAME, testable = false)
   @TargetsContainer(EAP6)
   @OverProtocol("Servlet 3.0")
-  public static EnterpriseArchive createDep1() {
-    JavaArchive jar = ShrinkWrap.create(JavaArchive.class, MODULE_NAME + ".jar")
-
-    .addClass(StatelessBusinessInterface.class)
-    .addClass(StatelessRemoteBusinessInterface.class)
-
-    .addClass(StatelessBusinessInterfaceImpl.class)
-    .addClass(StatelessRemoteBusinessInterfaceBean.class)
-
-    ;
-
-    EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, NAME + ".ear");
-    ear.addAsModule(jar);
-    return ear;
+  public static EnterpriseArchive createServerEar() {
+    return EJB3RemoteBusinessInterfaceTestCase.createServerDeployment();
   }
 
   @Deployment(name = CLIENT_NAME)
   @TargetsContainer(EAP5)
   @OverProtocol("Servlet 2.5")
-  public static EnterpriseArchive createDep2() {
-    JavaArchive jar = ShrinkWrap.create(JavaArchive.class, CLIENT_MODULE_NAME + ".jar")
-        .addClass(RemoteBusinessInterfaceClientBean.class)
-        .addClass(RemoteBusinessInterfaceClient.class)
-
-        .addClass(StatelessBusinessInterface.class)
-        .addClass(StatelessRemoteBusinessInterface.class)
-
-        .addClass(EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest.class)
-        .addClass(TimeoutTestCase.class)
-    ;
-
-    EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, CLIENT_NAME + ".ear");
-    ear.addAsModule(jar);
-    return ear;
+  public static EnterpriseArchive createClientEar() {
+    return EJB3RemoteBusinessInterfaceTestCase.createClientDeployment(EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest.class);
   }
 
-  @Test
-  @Ignore
-  @OperateOnDeployment(CLIENT_NAME)
-  public void testStatelessSessionBeanRemoteBusinessInterfaceInvocation() throws Exception {
-    RemoteBusinessInterfaceClient client = getClient();
-    String string = "" + System.currentTimeMillis();
-    String jndiName = NAME + "/" + StatelessRemoteBusinessInterface.class.getSimpleName() + "Bean/remote";
-
-    assertEquals(string, client.invokeStateless(jndiName, string));
+  public EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest() {
+    super("jnp://127.0.0.1:6599");
   }
 
-  private RemoteBusinessInterfaceClient getClient() throws NamingException {
-//    if (client != null)
-//      return client;
-    InitialContext context = new InitialContext();
-    String jndiName = CLIENT_NAME + "/" + RemoteBusinessInterfaceClient.class.getSimpleName() + "Bean/remote";
-    //EAP 6 style
-    //jndiName = "java:global/rmi-sever-client/rmi-ejb-client/RemoteBusinessInterfaceClientBean!org.jboss.tests.ejb3.interfaces.RemoteBusinessInterfaceClient";
-    return (RemoteBusinessInterfaceClient) context.lookup(jndiName);
+  //FIXME remove this temporary fix when legacy jnp implementation will be correct
+  @Override
+  protected String createJndiName(Class<?> remoteInterfaceClass) throws Exception {
+    return remoteInterfaceClass.getSimpleName() + "Bean/remote";
   }
-
-
-  @Test
-  @OperateOnDeployment(CLIENT_NAME)
-  public void testInvokeStateless() throws Exception {
-    String string = "" + System.currentTimeMillis();
-    String jndiName = NAME + "/" + StatelessRemoteBusinessInterface.class.getSimpleName() + "Bean/remote";
-    //jndiName = "rmi-sever/rmi-ejb/StatelessRemoteBusinessInterfaceBean!org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface";
-    jndiName = "jboss/exported/rmi-sever/rmi-ejb/StatelessRemoteBusinessInterfaceBean!org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface";
-    //jndiName = "rmi-sever/rmi-ejb/StatelessRemoteBusinessInterfaceBean";
-      StatelessRemoteBusinessInterface stateless = lookupEJBObject(jndiName, StatelessRemoteBusinessInterface.class);
-      assertEquals(string, stateless.echo(string));
-  }
-
-
-  private <T> T lookupEJBObject(String jndiName, Class <T> interfaceClass) throws NamingException, Exception {
-    Properties props = new Properties();
-//    props.put("java.naming.factory.initial", "org.jboss.naming.NamingContextFactory"); // "org.jnp.interfaces.NamingContextFactory");
-    props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-    props.put(Context.PROVIDER_URL, "jnp://127.0.0.1:6599");//offset by 1000
-    props.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
-    InitialContext ctx = new InitialContext(props);
-    System.err.println("Looking up object: " + jndiName);
-    Object ejbBusIntf = ctx.lookup(jndiName);
-    System.err.println("Found object of type " + ejbBusIntf.getClass().getName() + ": " + String.valueOf(ejbBusIntf));
-//    return (T) ejbBusIntf;
-    @SuppressWarnings("unchecked")
-    T ejb = (T) javax.rmi.PortableRemoteObject.narrow(ejbBusIntf, interfaceClass);
-    System.err.println("Narrowed object returned: " + String.valueOf(ejb));
-    return ejb;
-  }
-
 }

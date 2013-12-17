@@ -21,18 +21,16 @@
  */
 package org.jboss.tests.ejb3.interfaces;
 
+import java.util.Properties;
+
 import javax.ejb.Remote;
 
-/**
- *
- * @author Dominik Pospisil <dpospisi@redhat.com>
- */
 @Remote
-public interface RemoteBusinessInterfaceClient {
+public interface ClientRemoteBusinessInterface {
 
 //    public void invokeStatefulHome(String jndiName) throws Exception;
 
-    public String invokeStateless(String jndiName, String string) throws Exception;
+    public String invokeStateless(String jndiName, Properties initialContextProperties, String string) throws Exception;
 
 //    public void invokeStateful(String jndiName) throws Exception;
 }

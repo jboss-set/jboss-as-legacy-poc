@@ -19,9 +19,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.tests.ejb3;
+package org.jboss.tests.eap6;
 
 import static org.jboss.tests.ServerNames.*;
+import static org.jboss.tests.ejb3.EJB3RemoteBusinessInterfaceTestCase.*;
 
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.Deployer;
@@ -31,27 +32,27 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.tests.ejb3.beans.RemoteBusinessInterfaceClientBean;
-import org.jboss.tests.ejb3.interfaces.RemoteBusinessInterfaceClient;
-import org.jboss.tests.ejb3.interfaces.StatelessBusinessInterface;
-import org.jboss.tests.ejb3.interfaces.StatelessRemoteBusinessInterface;
+import org.jboss.tests.ejb3.EJB3RemoteBusinessInterfaceTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/*
+VM arguments
+-Darquillian.launch=eap-group
+-Darq.group.eap-group.container.eap5.mode=manual
+-Darq.group.eap-group.container.eap6.mode=manual
+-DEAP5_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
+-DEAP5_HOME=target/runtimes/jboss-eap-5.1/jboss-as
+-DEAP6_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
+-DEAP6_HOME=target/runtimes/jboss-eap-6.2
+
+ */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class DeploymentToEAP6_EAPGroupManualTest {
-
-  private static final String NAME = "rmi-sever";
-
-  private static final String CLIENT_NAME = NAME + "-client";
-
-  private static final String CLIENT_MODULE_NAME = "rmi-ejb-client";
 
   @ArquillianResource
   private Deployer deployer;
@@ -69,29 +70,17 @@ public class DeploymentToEAP6_EAPGroupManualTest {
     controller.stop(EAP6);
   }
 
-  @Deployment(name = CLIENT_NAME, managed = false)
+  @Deployment(name = NAME, managed = false, testable = false)
   @TargetsContainer(EAP6)
   @OverProtocol("Servlet 3.0")
-  public static EnterpriseArchive createDep2() {
-    JavaArchive jar = ShrinkWrap.create(JavaArchive.class, CLIENT_MODULE_NAME + ".jar")
-        .addClass(RemoteBusinessInterfaceClientBean.class)
-        .addClass(RemoteBusinessInterfaceClient.class)
-
-        .addClass(StatelessBusinessInterface.class)
-        .addClass(StatelessRemoteBusinessInterface.class)
-
-        .addClass(DeploymentToEAP6_EAPGroupManualTest.class)
-
-    ;
-    EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, CLIENT_NAME + ".ear");
-    ear.addAsModule(jar);
-    return ear;
+  public static EnterpriseArchive createDeployment() {
+    return EJB3RemoteBusinessInterfaceTestCase.createServerDeployment();
   }
 
   @Test
   public void testDeployOfEAR() throws Exception {
-    deployer.deploy(CLIENT_NAME);
-    deployer.undeploy(CLIENT_NAME);
+    deployer.deploy(NAME);
+    deployer.undeploy(NAME);
   }
 
 }

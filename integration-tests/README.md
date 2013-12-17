@@ -28,6 +28,8 @@ Dependencies with patch allowing to run EAP5 and EAP6 containers at the same mov
 
 Running tests
 
+Please note testes have to be run with jdk 1.6 as EAP 5.1 can not be run on jdk 1.7 !
+
 	cd /home/development
 	cd jboss-as-legacy-poc
 	
@@ -36,7 +38,7 @@ Running tests
 	-Dintegration-tests -pl :integration-tests \
 	-Djbossas.ts.zip.eap5=/home/development/artifacts/JBEAP-5.1.0.GA/jboss-eap-noauth-5.1.0.zip \
 	-Djbossas.ts.zip.eap6=/home/development/artifacts/jboss-eap-6.2.0.patched.zip \
-	clean verify
+	clean verify org.apache.maven.plugins:maven-surefire-report-plugin:2.16:report-only
 	
 	# next time when servres are installed
 	mvn -fn -B -s /home/development/jboss-eap/tools/maven/conf/settings.xml -Dpublic-repos -Dmaven.repo.local=/home/development/jboss-eap/maven-repo-local -Dversion.jboss.legacy=5.1.0.GA -Dcheckstyle.skip=true \
@@ -48,7 +50,7 @@ Running tests
 	mvn -fn -B -s /home/development/jboss-eap/tools/maven/conf/settings.xml -Dpublic-repos -Dmaven.repo.local=/home/development/jboss-eap/maven-repo-local -Dversion.jboss.legacy=5.1.0.GA -Dcheckstyle.skip=true \
 	-Dintegration-tests -pl :integration-tests \
 	-Dnoprepare \
-	org.apache.maven.plugins:maven-surefire-report-plugin:2.16:report-only
+	verify org.apache.maven.plugins:maven-surefire-report-plugin:2.16:report-only
 
 
 VM arguments to start test from IDE

@@ -1039,7 +1039,7 @@
             	</property>
             </activation>
             <properties>
-            	<EAP6-DEBUG-ARGS>-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</EAP6-DEBUG-ARGS>
+            	<EAP6-DEBUG-ARGS>-Xrunjdwp:transport=dt_socket,address=9787,server=y,suspend=y</EAP6-DEBUG-ARGS>
             </properties>
         </profile>
     </profiles>

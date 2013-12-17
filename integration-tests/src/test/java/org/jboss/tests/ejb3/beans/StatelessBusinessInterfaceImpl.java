@@ -1,6 +1,5 @@
 package org.jboss.tests.ejb3.beans;
 
-//import javax.annotation.Resource;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 

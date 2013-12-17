@@ -22,14 +22,15 @@
 package org.jboss.tests.ejb3;
 
 import static org.jboss.tests.ServerNames.*;
+import static org.jboss.tests.ejb3.EJB3RemoteBusinessInterfaceTestCase.*;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OverProtocol;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.junit.runner.RunWith;
-
 /*
 
 VM arguments
@@ -46,26 +47,33 @@ to debug add to vmargs  -Xrunjdwp:transport=dt_socket,address=8787,server=y,susp
 
  */
 @RunWith(Arquillian.class)
-public class EJB3RemoteBusinessInterface_EAP6toEAP5_EAPGroupManagedTest extends EJB3RemoteBusinessInterfaceTestCase {
+@RunAsClient
+public class EJB3RemoteBusinessInterface_EAP5WartoEAP6_EAPGroupManagedTest extends EJB3RemoteBusinessInterfaceWarTestCase {
 
   @Deployment(name = NAME, testable = false)
-  @TargetsContainer(EAP5)
-  @OverProtocol("Servlet 2.5")
+  @TargetsContainer(EAP6)
+  @OverProtocol("Servlet 3.0")
   public static EnterpriseArchive createServerEar() {
     return EJB3RemoteBusinessInterfaceTestCase.createServerDeployment();
   }
 
-  @Deployment(name = CLIENT_NAME)
-  @TargetsContainer(EAP6)
-  @OverProtocol("Servlet 3.0")
+  @Deployment(name = CLIENT_NAME, testable = false)
+  @TargetsContainer(EAP5)
+  @OverProtocol("Servlet 2.5")
   public static EnterpriseArchive createClientEar() {
-    return EJB3RemoteBusinessInterfaceTestCase.createClientDeployment(EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest.class);
-    //    ear.addAsLibrary(new File("lib/jnp-client-5.0.3.GA_CP02.jar"));
-
+    return EJB3RemoteBusinessInterfaceTestCase.createClientDeployment().addAsModule(
+        createWar()
+    );
   }
 
-  public EJB3RemoteBusinessInterface_EAP6toEAP5_EAPGroupManagedTest() {
-    super("jnp://127.0.0.1:1099");
+
+  public EJB3RemoteBusinessInterface_EAP5WartoEAP6_EAPGroupManagedTest() {
+    super("jnp://127.0.0.1:6599");
   }
 
+  //FIXME remove this temporary fix (delete method) when legacy jnp implementation will be correct
+  @Override
+  protected String createJndiName(Class<?> remoteInterfaceClass) throws Exception {
+    return remoteInterfaceClass.getSimpleName() + "Bean/remote";
+  }
 }

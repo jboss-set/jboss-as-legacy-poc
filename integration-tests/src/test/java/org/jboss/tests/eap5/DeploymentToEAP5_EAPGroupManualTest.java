@@ -19,53 +19,68 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.tests.ejb3;
+package org.jboss.tests.eap5;
 
 import static org.jboss.tests.ServerNames.*;
+import static org.jboss.tests.ejb3.EJB3RemoteBusinessInterfaceTestCase.*;
 
+import org.jboss.arquillian.container.test.api.ContainerController;
+import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OverProtocol;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
+import org.jboss.tests.ejb3.EJB3RemoteBusinessInterfaceTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /*
-
 VM arguments
 -Darquillian.launch=eap-group
--Darq.group.eap-group.container.eap5.mode=class
--Darq.group.eap-group.container.eap6.mode=class
--Darq.group.eap-group.container.eap6.serverConfig=standalone.xml
--DEAP5_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
+-Darq.group.eap-group.container.eap5.mode=manual
+-Darq.group.eap-group.container.eap6.mode=manual
+-DEAP5_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
 -DEAP5_HOME=target/runtimes/jboss-eap-5.1/jboss-as
 -DEAP6_VMARGS="-Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true"
 -DEAP6_HOME=target/runtimes/jboss-eap-6.2
 
-to debug add to vmargs  -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y
-
  */
 @RunWith(Arquillian.class)
-public class EJB3RemoteBusinessInterface_EAP6toEAP5_EAPGroupManagedTest extends EJB3RemoteBusinessInterfaceTestCase {
+@RunAsClient
+public class DeploymentToEAP5_EAPGroupManualTest {
 
-  @Deployment(name = NAME, testable = false)
+  @ArquillianResource
+  private Deployer deployer;
+
+  @ArquillianResource
+  protected ContainerController controller;
+
+  @Before
+  public void before() throws Exception {
+    controller.start(EAP5);
+  }
+
+  @After
+  public void after() throws Exception {
+    controller.stop(EAP5);
+  }
+
+  @Deployment(name = NAME, managed = false, testable = false)
   @TargetsContainer(EAP5)
   @OverProtocol("Servlet 2.5")
-  public static EnterpriseArchive createServerEar() {
+  public static EnterpriseArchive createDeployment() {
     return EJB3RemoteBusinessInterfaceTestCase.createServerDeployment();
   }
 
-  @Deployment(name = CLIENT_NAME)
-  @TargetsContainer(EAP6)
-  @OverProtocol("Servlet 3.0")
-  public static EnterpriseArchive createClientEar() {
-    return EJB3RemoteBusinessInterfaceTestCase.createClientDeployment(EJB3RemoteBusinessInterface_EAP5toEAP6_EAPGroupManagedTest.class);
-    //    ear.addAsLibrary(new File("lib/jnp-client-5.0.3.GA_CP02.jar"));
-
-  }
-
-  public EJB3RemoteBusinessInterface_EAP6toEAP5_EAPGroupManagedTest() {
-    super("jnp://127.0.0.1:1099");
+  @Test
+  public void testDeployOfEAR() throws Exception {
+    deployer.deploy(NAME);
+    deployer.undeploy(NAME);
   }
 
 }

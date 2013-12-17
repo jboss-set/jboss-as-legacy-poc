@@ -27,7 +27,7 @@ import org.junit.rules.Timeout;
 public abstract class TimeoutTestCase {
 
   private static final String KEY_TEST_TIMEOUT = "test.timeoutMillis";
-  private static final int DEFAULT_TEST_TIMEOUT = 1*60000; // 1 minute
+  private static final int DEFAULT_TEST_TIMEOUT = 10*60000; // 1 minute
   @Rule
   public Timeout timeout = new Timeout(readIntValueFromSystemProperties(KEY_TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT));
 

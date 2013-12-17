@@ -21,6 +21,8 @@
  */
 package org.jboss.tests.eap6;
 
+import static org.jboss.tests.ServerNames.*;
+
 import org.jboss.arquillian.container.test.api.ContainerController;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -37,19 +39,15 @@ public class ServerStartStopEAP6GroupManualTest {
 
   @Test
   public void testSingleServer() throws Exception {
-    String serverName = "eap6-1";
-    controller.start(serverName);
-    controller.stop(serverName);
+    controller.start(EAP6_1);
+    controller.stop(EAP6_1);
   }
 
   @Test
   public void testTwoServers() throws Exception {
-    String serverName = "eap6-1";
-    controller.start(serverName);
-    String serverName2 = "eap6-2";
-    controller.start(serverName);
-    controller.start(serverName2);
-    controller.stop(serverName2);
-    controller.stop(serverName);
+    controller.start(EAP6_1);
+    controller.start(EAP6_2);
+    controller.stop(EAP6_2);
+    controller.stop(EAP6_1);
   }
 }
