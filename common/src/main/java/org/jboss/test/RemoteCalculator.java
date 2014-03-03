@@ -16,10 +16,12 @@
  */
 package org.jboss.test;
 
+import java.io.Serializable;
+
 /**
  * @author Jaikiran Pai
  */
-public interface RemoteCalculator {
+public interface RemoteCalculator extends Serializable{
 
     int add(int a, int b);
 

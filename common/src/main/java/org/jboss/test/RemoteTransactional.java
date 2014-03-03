@@ -22,11 +22,13 @@
 
 package org.jboss.test;
 
+import java.io.Serializable;
+
 /**
  * @author baranowb
  * 
  */
-public interface RemoteTransactional {
+public interface RemoteTransactional extends Serializable {
 
     void rollback();
 

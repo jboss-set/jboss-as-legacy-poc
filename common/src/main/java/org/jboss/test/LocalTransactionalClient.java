@@ -16,9 +16,11 @@
  */
 package org.jboss.test;
 
+import java.io.Serializable;
+
 import javax.naming.NamingException;
 
-public interface LocalTransactionalClient {
+public interface LocalTransactionalClient extends Serializable {
     String NAME_STATELESS = "TransactionalBean/remote";
     String NAME_STATEFUL = "StatefulTransactionalBean/remote";
     String NAME_STATELESS_SECURED = "SecuredTransactionalBean/remote";

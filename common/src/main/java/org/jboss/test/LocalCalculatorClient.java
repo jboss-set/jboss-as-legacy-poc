@@ -16,9 +16,11 @@
  */
 package org.jboss.test;
 
+import java.io.Serializable;
+
 import javax.naming.NamingException;
 
-public interface LocalCalculatorClient {
+public interface LocalCalculatorClient extends Serializable{
     String NAME_STATELESS = "CalculatorBean/remote";
     String NAME_STATEFUL = "StatefulCalculatorBean/remote";
     String NAME_STATELESS_SECURED = "SecuredCalculatorBean/remote";
