@@ -18,6 +18,8 @@ package org.jboss.test;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+
+import org.jboss.common.RemoteCalculator;
 @Stateless
 @Remote(RemoteCalculator.class)
 public class CalculatorBean implements RemoteCalculator {

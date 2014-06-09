@@ -61,6 +61,7 @@
              			<webModule>
                             <groupId>org.jboss.jbpapp-10880</groupId>
             				<artifactId>test-client-web5</artifactId>
+            				<!-- this is ignored due to jboss-web.xml it seems -->
                             <contextRoot>/test</contextRoot>
                         </webModule>
           			</modules>

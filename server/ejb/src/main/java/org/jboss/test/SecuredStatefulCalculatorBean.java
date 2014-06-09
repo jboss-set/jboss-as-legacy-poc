@@ -26,6 +26,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
+import org.jboss.common.RemoteCalculator;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
 @Stateful

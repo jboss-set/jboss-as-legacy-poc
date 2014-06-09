@@ -31,6 +31,8 @@ import javax.security.auth.login.LoginException;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
+import org.jboss.common.LocalTransactionalClient;
+import org.jboss.common.RemoteTransactional;
 import org.jboss.security.auth.callback.UsernamePasswordHandler;
 
 @Stateless(name = "test-transactional")

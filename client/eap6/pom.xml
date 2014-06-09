@@ -3,20 +3,25 @@
 
     <parent>
     	<groupId>org.jboss.jbpapp-10880</groupId>
-    	<artifactId>test-server</artifactId>
+    	<artifactId>test-client</artifactId>
     	<version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>test-server-eap5</artifactId>
+    <artifactId>test-client-eap6</artifactId>
     <packaging>ear</packaging>
     <name>J.A.R.V.I.S-micro :: ${project.artifactId}</name>
 
 	<dependencies>
         <!-- Dependencies on the ejb and web modules so that they can be found by the ear plugin -->
-
         <dependency>
             <groupId>org.jboss.jbpapp-10880</groupId>
-            <artifactId>test-server-ejb</artifactId>
+            <artifactId>test-client-web6</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.jbpapp-10880</groupId>
+            <artifactId>test-client-ejb6</artifactId>
             <version>${project.version}</version>
             <type>ejb</type>
         </dependency>
@@ -33,12 +38,37 @@
      <build>
       <finalName>${project.parent.artifactId}</finalName>
         <plugins>
+            <!-- EAR plugin sucks... -->
+            <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-resources-plugin</artifactId>
+           <version>2.4.3</version>
+            <executions>
+	            <execution>
+	                <id>copy-resources</id>
+	                    <phase>validate</phase>
+	                    <goals>
+	                    <goal>copy-resources</goal>
+	                    </goals>
+	                        <configuration>
+	                            <outputDirectory>target/test-client/META-INF</outputDirectory>
+	                            <resources>
+					            <resource>
+					                <directory>src/main/application/META-INF/</directory>
+					                <filtering>true</filtering>
+					            </resource>
+				            </resources>
+			            </configuration>
+		            </execution>
+	            </executions>
+	        </plugin>
             <!-- Ear plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
                 	<version>5</version>
+                	<earSourceIncludes>**/META-INF</earSourceIncludes>
                 	<earSourceIncludes>**/*.properties</earSourceIncludes>
                 <!--
                 	<generateApplicationXml>false</generateApplicationXml>
@@ -52,10 +82,14 @@
                				<includeInApplicationXml>true</includeInApplicationXml>
              			</jarModule>
              			-->
+             			<webModule>
+                            <groupId>org.jboss.jbpapp-10880</groupId>
+            				<artifactId>test-client-web6</artifactId>
+                            <contextRoot>/test</contextRoot>
+                        </webModule>
           			</modules>
         		</configuration>
             </plugin>
 		</plugins>
     </build>
-
 </project>

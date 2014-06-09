@@ -175,6 +175,8 @@ import javax.ejb.TransactionAttributeType;
 import javax.transaction.Status;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.jboss.common.transactional.TransactionMandatoryRemote;
+
 /**
  *
  * @author <a href="mailto:ehugonne@redhat.com">Emmanuel Hugonnet</a> (c) 2013 Red Hat, inc.

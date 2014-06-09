@@ -15,5 +15,8 @@
 		<module>ejb</module>
 		<module>web5</module>
 		<module>eap5</module>
+		<module>ejb6</module>
+		<module>web6</module>
+		<module>eap6</module>
 	</modules>
 </project>

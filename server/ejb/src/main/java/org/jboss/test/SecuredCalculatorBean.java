@@ -20,7 +20,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import org.jboss.test.RemoteCalculator;
+import org.jboss.common.RemoteCalculator;
 import org.jboss.ejb3.annotation.SecurityDomain;
 @Stateless
 @Remote(RemoteCalculator.class)

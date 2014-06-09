@@ -11,10 +11,6 @@
         <servlet-name>TestServlet</servlet-name>
         <servlet-class>org.jboss.test.TestServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>TestTransactionalServlet</servlet-name>
-        <servlet-class>org.jboss.test.transactional.TestTransactionalServlet</servlet-class>
-    </servlet>
 
     <!-- The servlet and jsp page mappings -->
     <servlet-mapping>
@@ -25,27 +21,13 @@
         <servlet-name>TestServlet</servlet-name>
         <url-pattern>/regular/secured/test</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TestTransactionalServlet</servlet-name>
-        <url-pattern>/transactional/test</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TestTransactionalServlet</servlet-name>
-        <url-pattern>/transactional/secured/test</url-pattern>
-    </servlet-mapping>
+    
 
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>All resources</web-resource-name>
             <description>Protects all resources</description>
             <url-pattern>/regular/secured/*</url-pattern>
-            <http-method>GET</http-method>
-            <http-method>POST</http-method>
-        </web-resource-collection>
-        <web-resource-collection>
-            <web-resource-name>All resources</web-resource-name>
-            <description>Protects all resources</description>
-            <url-pattern>/transactional/secured/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>

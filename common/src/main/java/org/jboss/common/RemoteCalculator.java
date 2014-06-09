@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.test;
+package org.jboss.common;
+
+import java.io.Serializable;
 
 /**
  * @author Jaikiran Pai
  */
-public interface RemoteCalculator {
+public interface RemoteCalculator extends Serializable{
 
     int add(int a, int b);
 

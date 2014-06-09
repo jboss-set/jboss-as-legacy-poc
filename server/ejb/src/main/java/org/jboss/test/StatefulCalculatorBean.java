@@ -25,6 +25,8 @@ package org.jboss.test;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
 
+import org.jboss.common.RemoteCalculator;
+
 @Stateful
 @Remote(RemoteCalculator.class)
 public class StatefulCalculatorBean implements RemoteCalculator{

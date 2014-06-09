@@ -20,13 +20,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.test;
+package org.jboss.common;
+
+import java.io.Serializable;
 
 /**
  * @author baranowb
  * 
  */
-public interface RemoteTransactional {
+public interface RemoteTransactional extends Serializable {
 
     void rollback();
 

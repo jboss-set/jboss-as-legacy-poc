@@ -49,43 +49,6 @@ public class TestServlet extends HttpServlet {
         this.client = client;
     }
 
-    //
-    // @Override
-    // protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    //
-    // resp.setContentType("text/html");
-    // final PrintWriter out = resp.getWriter();
-    //
-    // out.println("<HTML>");
-    // out.println("<HEAD><TITLE>Hello World</TITLE></HEAD>");
-    // out.println("<BODY>");
-    // out.println("<BIG>Hello World</BIG>");
-    //
-    // out.println("<br>***********************************************");
-    // out.println("<br>INVOKE ME:" + req.getQueryString());
-    // out.println("<br>INVOKE ME:" + this.client);
-    // out.println("<br>INVOKE ME:" + req.getAuthType());
-    //
-    // String url = req.getParameter(PARAMETER_URL);
-    // if (url == null)
-    // url = DEFAULT_URL;
-    // String stateful = req.getParameter(PARAMETER_STATEFUL);
-    // if (stateful == null)
-    // stateful = DEFAULT_STATEFUL;
-    // String secured = req.getParameter(PARAMETER_SECURED);
-    // if (secured == null)
-    // secured = DEFAULT_SECURED;
-    // final String prefix = req.getParameter(PARAMETER_PREFIX);
-    // try {
-    // client.doCallTheBean(out, url, prefix, Boolean.valueOf(secured), Boolean.valueOf(stateful));
-    // } catch (NamingException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // out.println("<br>***********************************************");
-    // out.println("</BODY></HTML>");
-    // }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Enumeration<String> names = request.getParameterNames();

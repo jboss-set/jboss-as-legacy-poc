@@ -31,7 +31,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
-import org.jboss.test.RemoteTransactional;
+import org.jboss.common.RemoteTransactional;
 
 /**
  * @author baranowb
