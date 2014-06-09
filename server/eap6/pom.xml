@@ -37,6 +37,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
+                   <earSourceIncludes>**/*.properties</earSourceIncludes>
 	 	           <modules>
 	 	           	    <!--
         		     	<jarModule>

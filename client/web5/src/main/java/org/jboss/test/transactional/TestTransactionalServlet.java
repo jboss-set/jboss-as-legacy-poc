@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.test.LocalTransactionalClient;
+import org.jboss.common.LocalTransactionalClient;
 
 /**
  * @author baranowb

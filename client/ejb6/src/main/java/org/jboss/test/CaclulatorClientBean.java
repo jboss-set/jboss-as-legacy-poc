@@ -22,13 +22,15 @@
 
 package org.jboss.test;
 
-import java.util.Properties;
-
+import javax.annotation.Resource;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import org.jboss.common.LocalCalculatorClient;
+import org.jboss.common.RemoteCalculator;
 
 /**
  * @author baranowb
@@ -37,14 +39,14 @@ import javax.naming.NamingException;
 @Stateless(name = "test")
 @Local(LocalCalculatorClient.class)
 public class CaclulatorClientBean implements LocalCalculatorClient {
-
+    
+    @Resource(lookup = "java:global/client-context")
+    private Context ctx;
     public String doCallTheBean(String address, String prefix, boolean secured, boolean statefull) throws NamingException {
-
         final StringBuilder resultBuilder = new StringBuilder();
         final String name = getName(prefix, secured, statefull);
         try {
-            final InitialContext ic = getContext(address);
-            RemoteCalculator rc = (RemoteCalculator) ic.lookup(name);
+            RemoteCalculator rc = (RemoteCalculator) ctx.lookup(name);
             resultBuilder.append("*************************************").append("<br>\n");
             int result = rc.add(1, 1);
             resultBuilder.append(result).append("<br>\n");
@@ -68,17 +70,6 @@ public class CaclulatorClientBean implements LocalCalculatorClient {
         } finally {
         }
         return resultBuilder.toString();
-    }
-
-    private InitialContext getContext(final String url) throws NamingException {
-        final Properties jndiProperties = new Properties();
-        jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
-        jndiProperties.put(Context.PROVIDER_URL, "jnp://" + url);
-        jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
-        // java.naming.security.principal=TestUser
-        // java.naming.security.credentials=TestPassword
-        final InitialContext context = new InitialContext(jndiProperties);
-        return context;
     }
 
     /**

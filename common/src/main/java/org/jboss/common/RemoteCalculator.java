@@ -14,23 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.test;
+package org.jboss.common;
 
 import java.io.Serializable;
 
-import javax.naming.NamingException;
+/**
+ * @author Jaikiran Pai
+ */
+public interface RemoteCalculator extends Serializable{
 
-public interface LocalTransactionalClient extends Serializable {
-    String NAME_STATELESS = "TransactionalBean/remote";
-    String NAME_STATEFUL = "StatefulTransactionalBean/remote";
-    String NAME_STATELESS_SECURED = "SecuredTransactionalBean/remote";
-    String NAME_STATEFUL_SECURED = "SecuredStatefulTransactionalBean/remote";
+    int add(int a, int b);
 
-    String TEST_USER = "TestUser";
-    String TEST_PASSWORD = "TestPassword";
-    String TEST_DOMAIN = "TestDomain";
-    String TEST_ROLE = "TestRole";
-
-    String doCallTheBean(String address, String prefix, String methodName, boolean secured, boolean stateful)
-            throws NamingException;
+    int subtract(int a, int b);
+    
+    int current();
 }

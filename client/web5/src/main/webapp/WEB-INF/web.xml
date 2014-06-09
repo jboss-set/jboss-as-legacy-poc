@@ -62,7 +62,7 @@
         <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/regular/secured/login.html</form-login-page>
-            <form-error-page>/regular/secured/errors.html</form-error-page>
+            <form-error-page>/regular/secured/error.html</form-error-page>
         </form-login-config>
     </login-config>
 </web-app>

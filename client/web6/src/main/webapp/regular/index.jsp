@@ -5,9 +5,9 @@ Welocme to unsecured page!
 Or? '<%= request.getRemoteUser() %>!'
 <br>
 <form action="/test/regular/test" method="POST">
-URL: <input type="text" name="url" value="127.0.0.1:1099"/>
+URL: <input type="text" name="url" value="127.0.0.1:1199"/>
 <br />
-Prefix: <input type="text" name="prefix"/>
+Prefix: <input type="text" name="prefix" value="test-server"/>
 <br />
 Stateful: <input type="checkbox" name="stateful"/>
 <br />
