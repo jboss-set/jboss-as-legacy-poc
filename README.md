@@ -25,7 +25,8 @@ EAP6 setup
 2. Copy https://github.com/jboss-set/jboss-as-legacy/blob/master/config/standalone.xml to EAP6/standalone/conf or edit config according to information provided upon deployment
 3. Modify naming subsystem definition in standalone.xml( add factory )
 
-```<subsystem xmlns="urn:jboss:domain:naming:1.4">
+```
+<subsystem xmlns="urn:jboss:domain:naming:1.4">
   <bindings>
     <external-context name="java:global/client-context" module="org.jboss.legacy.naming.spi" class="javax.naming.InitialContext">
       <environment>
@@ -36,7 +37,8 @@ EAP6 setup
     </external-context>
   </bindings>
   <remote-naming/>
-</subsystem>```
+</subsystem>
+```
 
 5. Modify security domains definition, add POC domain:
 ```
