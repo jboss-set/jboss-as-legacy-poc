@@ -1,20 +1,19 @@
 #!/bin/sh
 mvn clean install
-#JB5=/home/baranowb/redhat/tmp/jboss-5.1.0.GA
-JB5=/home/baranowb/redhat/svn/JBPAPP_5/build/output/jboss-5.3.0.Branch
-#JB6=/home/baranowb/redhat/git/jboss-eap/build/target/jboss-as-7.3.3.Final-redhat-SNAPSHOT
-JB6=/home/baranowb/redhat/git/jboss-eap/build/target/jboss-as-7.4.0.Final-redhat-SNAPSHOT
-if [ "x$JB5" = "x" ]; then
+
+#JBOSS_5=/home/baranowb/redhat/svn/JBPAPP_5/build/output/jboss-5.3.0.Branch
+#JBOSS_6=/home/baranowb/redhat/git/jboss-eap/build/target/jboss-as-7.4.0.Final-redhat-SNAPSHOT
+if [ "x$JBOSS_5" = "x" ]; then
     # get the full path (without any relative bits)
-    echo "Set ENV JB5!"
+    echo "Set ENV JBOSS_5!"
     return 1
 fi
-if [ "x$JB6" = "x" ]; then
+if [ "x$JBOSS_6" = "x" ]; then
     # get the full path (without any relative bits)
-    echo "Set ENV JB6!"
+    echo "Set ENV JBOSS_6!"
     return 1
 fi
-cp -v client/eap5/target/test-client.ear ${JB5}/server/default/deploy/
-cp -v client/eap6/target/test-client.ear ${JB6}/standalone/deployments/test-client2.ear
-cp -v server/eap5/target/test-server.ear ${JB5}/server/default/deploy/
-cp -v server/eap6/target/test-server.ear ${JB6}/standalone/deployments/
+cp -v client/eap5/target/test-client.ear ${JBOSS_5}/server/default/deploy/
+cp -v client/eap6/target/test-client.ear ${JBOSS_6}/standalone/deployments/
+cp -v server/eap5/target/test-server.ear ${JBOSS_5}/server/default/deploy/
+cp -v server/eap6/target/test-server.ear ${JBOSS_6}/standalone/deployments/

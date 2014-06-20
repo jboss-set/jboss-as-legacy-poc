@@ -7,7 +7,7 @@ Or? '<%= request.getRemoteUser() %>!'
 <form action="/legacy/regular/test" method="POST">
 URL: <input type="text" name="url" value="127.0.0.1:1099"/>
 <br />
-Prefix: <input type="text" name="prefix"/>
+Prefix: <input type="text" name="prefix" value="test-server"/>
 <br />
 Stateful: <input type="checkbox" name="stateful"/>
 <br />
