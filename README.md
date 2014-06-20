@@ -25,7 +25,7 @@ EAP6 setup
 2. Copy https://github.com/jboss-set/jboss-as-legacy/blob/master/config/standalone.xml to EAP6/standalone/conf or edit config according to information provided upon deployment
 3. Modify naming subsystem definition in standalone.xml( add factory )
 
-'''<subsystem xmlns="urn:jboss:domain:naming:1.4">
+```<subsystem xmlns="urn:jboss:domain:naming:1.4">
   <bindings>
     <external-context name="java:global/client-context" module="org.jboss.legacy.naming.spi" class="javax.naming.InitialContext">
       <environment>
@@ -36,10 +36,10 @@ EAP6 setup
     </external-context>
   </bindings>
   <remote-naming/>
-</subsystem>''''
+</subsystem>```
 
 5. Modify security domains definition, add POC domain:
-'''
+```
 <security-domain name="TestDomain" cache-type="default">
   <authentication>
      <login-module code="Remoting" flag="optional">
@@ -54,7 +54,7 @@ EAP6 setup
      </login-module>
    </authentication>
 </security-domain>
-'''
+```
 6. Create properties files in EAP6/standalone/conf
 7. Start server and access
  - http://localhost:8080/test/regular
@@ -65,7 +65,7 @@ EAP6 setup
 EAP5 setup
 ===================
 1. Edit EAP5/server/default/conf/login-config.xml , add login setup for domain:
-'''
+```
 <application-policy name="TestDomain">
   <authentication>
     <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
@@ -75,7 +75,7 @@ EAP5 setup
     </login-module>
   </authentication>
 </application-policy>
-'''
+```
 2. Create properties files in EAP5/server/default/conf/props
 3. Run server with '-Djboss.service.binding.set=ports-01' to avoid port collision with EAP6
 4. Access:
